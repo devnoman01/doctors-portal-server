@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -21,18 +22,35 @@ async function run() {
   try {
     await client.connect();
     console.log("DB Connected");
+
     const servicesCollection = client
       .db("doctors_portal")
       .collection("services");
+
     const bookingCollection = client
       .db("doctors_portal")
       .collection("bookings");
+
+    const userCollection = client.db("doctors_portal").collection("users");
 
     app.get("/service", async (req, res) => {
       const query = {};
       const cursor = servicesCollection.find(query);
       const services = await cursor.toArray();
       res.send(services);
+    });
+
+    // user info filter and update
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
     });
 
     // following part is not proper way or recommended to query
@@ -73,6 +91,7 @@ async function run() {
      * app.get('/booking/:id')  // get a specific booking
      * app.post('/booking') // add a new booking
      * app.patch('/booking/:id') // update a booking
+     * app.put('/booking/:id') // update a booking  // upsert ==> update(if exists) or insert(if doesn't exist)
      * app.delete('/booking/:id') // delete a booking
      */
 
