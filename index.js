@@ -3,7 +3,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const app = express();
 require("dotenv").config();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const { response } = require("express");
 
@@ -142,6 +142,7 @@ async function run() {
       // step-7:
       res.send(services);
     });
+    j;
 
     /**
      * API Naming Convention
