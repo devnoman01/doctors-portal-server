@@ -142,7 +142,6 @@ async function run() {
       // step-7:
       res.send(services);
     });
-    j;
 
     /**
      * API Naming Convention
